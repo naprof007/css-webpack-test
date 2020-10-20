@@ -1,0 +1,12 @@
+{
+  "name": "csswebpacktest",
+  "version": "1.0.0",
+  "description": "Testing Webpack css stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

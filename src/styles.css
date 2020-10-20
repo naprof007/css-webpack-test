@@ -1,0 +1,15 @@
+h1 {
+    color: darkblue;
+    text-shadow: 1px 1px 2px black, 0 0 4px yellowgreen;
+    text-align: center;
+}
+
+.window {
+    width: 80%;
+    height: 80vh;
+    background: aqua;
+    border: 1px solid black;
+    box-shadow: 0 0 15px 3px rgba(0,0,0,0.75);
+    border-radius: 6px;
+    margin: 0 auto;
+}
