@@ -8,10 +8,17 @@ module.exports = {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
     },
+    devServer: {
+        contentBase: './dist',
+    },
     plugins: [
-        new CleanWebpackPlugin(),
+        // Tell CleanWebpackPlugin that we don't want to remove the index.html file after the incremental build
+        // triggered by watch. We do this with the cleanStaleWebpackAssets option
+        new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
         new HtmlWebpackPlugin({
-            title: 'Output Management',
+            title: 'CSS Webpack Test',
+            template: 'src/index.html',
+            inject: 'body',
         }),
     ],
     module: {
