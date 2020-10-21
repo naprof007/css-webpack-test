@@ -1,32 +1,70 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const fs = require('fs');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const RemovePlugin = require('remove-files-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+
+const srcFolder = './src/';
+const distFolder = './dist/';
+const cssNamePostfix = '.min'; // for example, to convert css filenames like styles.css => styles.min.css
+
+let entry = {
+    script: srcFolder + 'index.js',
+}
+const filenames =  fs.readdirSync(path.resolve(__dirname, srcFolder));
+const cssFiles = filenames.filter(filename => /\.css$/.test(filename));
+const removeAfter = []
+cssFiles.forEach(cssName => {
+    let match = cssName.match(/(.+)\.css$/);
+    entry[match[1]] = srcFolder + match[0];
+    removeAfter.push(match[1] + '.js');
+});
 
 module.exports = {
-    entry: './src/index.js',
+    entry,
     output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, distFolder),
     },
     devServer: {
-        contentBase: './dist',
+        contentBase: distFolder,
+        overlay: true,
     },
     plugins: [
         // Tell CleanWebpackPlugin that we don't want to remove the index.html file after the incremental build
         // triggered by watch. We do this with the cleanStaleWebpackAssets option
         new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
-        new HtmlWebpackPlugin({
-            title: 'CSS Webpack Test',
-            template: 'src/index.html',
-            inject: 'body',
+        new MiniCssExtractPlugin({
+            filename: `[name]${cssNamePostfix}.css`,
+            ignoreOrder: false, // Enable to remove warnings about conflicting order
         }),
+        new OptimizeCssAssetsPlugin({
+            assetNameRegExp: /\.css$/g,
+            cssProcessor: require('cssnano'),
+            cssProcessorPluginOptions: {
+                preset: ['default', { discardComments: { removeAll: true } }],
+            },
+            canPrint: true
+        }),
+        new RemovePlugin({
+            after: {
+                root: distFolder,
+                include: removeAfter,
+            }
+        }),
+        new CopyPlugin([
+            {
+                from: path.resolve(srcFolder, 'index.html'),
+            }
+        ]),
     ],
     module: {
         rules: [
             {
                 test: /\.css$/,
                 use: [
-                    'style-loader',
+                    MiniCssExtractPlugin.loader,
                     'css-loader',
                 ],
             },
