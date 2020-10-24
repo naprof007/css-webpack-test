@@ -75,7 +75,15 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['@babel/preset-env'],
+                        // presets: ['@babel/preset-env'],
+                        presets: [['@babel/preset-env', {
+                            'useBuiltIns': 'usage', // false, entry, usage
+                            'corejs': '3.6.5',
+                            'targets': {
+                                'esmodules': true,
+                                'ie': '11',
+                            },
+                        }]],
                         plugins: [
                             '@babel/plugin-transform-runtime',
                             '@babel/plugin-transform-modules-commonjs',
