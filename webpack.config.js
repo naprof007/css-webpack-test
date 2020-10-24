@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const RemovePlugin = require('remove-files-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const srcFolder = './src/';
 const distFolder = './dist/';
@@ -68,6 +69,29 @@ module.exports = {
                     'css-loader',
                 ],
             },
+            {
+                test: /\.m?js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env'],
+                        plugins: [
+                            '@babel/plugin-transform-runtime',
+                            '@babel/plugin-transform-modules-commonjs',
+                        ]
+                    }
+                }
+            },
         ],
     },
+    optimization: {
+        minimizer: [
+            new UglifyJsPlugin({
+                uglifyOptions: {
+                    ie8: true,
+                }
+            })
+        ]
+    }
 };
